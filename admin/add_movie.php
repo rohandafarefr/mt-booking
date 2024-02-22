@@ -78,7 +78,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="../css/add_movie.css">
 </head>
 <body>
+        <div class="sidebar">
+            <h2>Menu</h2>
+            <ul>
+                <li><a href="book_ticket.php">Book Ticket</a></li>
+                <li><a href="add_movie.php">Add Movies</a></li>
+                <li><a href="add_show_timing.php">Show Timings</a></li>
+                <li><a href="booking_history.php">Bookings</a></li>
+                <li><a href="../backend/logout.php">Logout</a></li>
+            </ul>
+        </div>
     <div class="container">
+
         <h1>Add Movie</h1>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
             <div class="form-group <?php echo (!empty($title_err)) ? 'has-error' : ''; ?>">
