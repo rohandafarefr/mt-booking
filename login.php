@@ -5,11 +5,16 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
     header("Location: admin/dashboard.php");
     exit();
 }
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $admin_email = "admin@example.com";
-    $admin_password = "password";
 
-    if ($_POST['email'] == $admin_email && $_POST['password'] == $admin_password) {
+$error_message = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    require_once 'backend/login.php'; // Include backend login logic
+
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    if (admin_login($email, $password)) {
         $_SESSION['admin_logged_in'] = true;
         header("Location: admin/dashboard.php");
         exit();
@@ -29,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div class="container">
         <h1>Admin Login</h1>
-        <?php if (isset($error_message)): ?>
+        <?php if (!empty($error_message)): ?>
             <div class="error"><?php echo $error_message; ?></div>
         <?php endif; ?>
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
