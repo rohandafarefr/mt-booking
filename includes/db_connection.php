@@ -2,7 +2,7 @@
 $servername = "localhost"; 
 $username = "root"; 
 $password = "";
-$dbname = "ut_cinema"; 
+$dbname = "cinema_booking_system"; 
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
