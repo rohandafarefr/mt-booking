@@ -41,7 +41,7 @@ if ($result) {
                             <h3 class="movie-title"><?php echo $row['title']; ?></h3>
                             <p class="movie-description"><?php echo $row['description']; ?></p>
                             <a href="edit.php?movie_id=<?php echo $row['movie_id']; ?>"><button>Edit</button></a>
-                            <a href="#"><button>Delete</button></a>
+                            <a href="delete.php?movie_id=<?php echo $row['movie_id']; ?>"><button>Delete</button></a>
                         </div>
                     </div>
                     <?php
