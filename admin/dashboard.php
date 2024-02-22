@@ -27,7 +27,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             </ul>
         </div>
         <div class="content">
-            <h1>Welcome to Admin Dashboard</h1>
+            <h1>UT CINEMA</h1>
         </div>
     </div>
 </body>
