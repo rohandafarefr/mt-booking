@@ -20,10 +20,10 @@ if ($result) {
     <div class="sidebar">
             <h2>Menu</h2>
             <ul>
-                <li><a href="book_ticket.php">Book Ticket</a></li>
-                <li><a href="movie.php">Movies</a></li>
-                <li><a href="add_show_timing.php">Show Timings</a></li>
-                <li><a href="booking_history.php">Bookings</a></li>
+                <li><a href="add.php">Add Movie</a></li>
+                <li><a href="../book_ticket.php">Book Ticket</a></li>
+                <li><a href="../add_show_timing.php">Show Timings</a></li>
+                <li><a href="../booking_history.php">Bookings</a></li>
                 <li><a href="../../backend/logout.php">Logout</a></li>
             </ul>
         </div>
@@ -41,7 +41,6 @@ if ($result) {
                             <h3 class="movie-title"><?php echo $row['title']; ?></h3>
                             <p class="movie-description"><?php echo $row['description']; ?></p>
                             <a href="edit.php?movie_id=<?php echo $row['movie_id']; ?>"><button>Edit</button></a>
-                            <a href="delete.php?movie_id=<?php echo $row['movie_id']; ?>"><button>Delete</button></a>
                         </div>
                     </div>
                     <?php

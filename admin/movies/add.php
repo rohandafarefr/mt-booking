@@ -6,7 +6,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit();
 }
 
-include '../includes/db_connection.php';
+include '../../includes/db_connection.php';
 
 $title = $description = $release_date = $image = "";
 $title_err = $description_err = $release_date_err = $image_err = "";
@@ -31,18 +31,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if ($_FILES["image"]["error"] == 0) {
-        $image_info = getimagesize($_FILES["image"]["tmp_name"]);
+        $image_info = getimagesize($_FILES["image"]["tmp_name"]); // Get image size info
         if ($image_info !== false) {
             if ($_FILES["image"]["size"] > 500000) { 
                 $image_err = "Sorry, your file is too large.";
             } else {
-                $image = "uploads/" . uniqid() . "_" . basename($_FILES["image"]["name"]);
-                move_uploaded_file($_FILES["image"]["tmp_name"], $image);
+                $upload_dir = "../../uploads/";
+                $image_name = basename($_FILES["image"]["name"]);
+                $target_file = $upload_dir . $image_name;
+    
+                if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+                    // File uploaded successfully, update image variable
+                    $image = "http://localhost/mt-booking/uploads/" . $image_name;
+                } else {
+                    $image_err = "Error uploading image file.";
+                }
             }
         } else {
             $image_err = "File is not an image.";
         }
     }
+    
 
     if (empty($title_err) && empty($description_err) && empty($release_date_err) && empty($image_err)) {
         $sql = "INSERT INTO movies (title, description, release_date, image) VALUES (?, ?, ?, ?)";
@@ -56,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $param_image = $image;
 
             if ($stmt->execute()) {
-                header("Location: movies.php");
+                header("Location: index.php");
                 exit();
             } else {
                 echo "Something went wrong. Please try again later.";
@@ -75,14 +84,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Add Movie</title>
-    <link rel="stylesheet" href="../css/add_movie.css">
+    <link rel="stylesheet" href="../../css/add_movie.css">
 </head>
 <body>
         <div class="sidebar">
             <h2>Menu</h2>
             <ul>
+                <li><a href="../movies">Movies</a></li>
                 <li><a href="book_ticket.php">Book Ticket</a></li>
-                <li><a href="add_movie.php">Add Movies</a></li>
                 <li><a href="add_show_timing.php">Show Timings</a></li>
                 <li><a href="booking_history.php">Bookings</a></li>
                 <li><a href="../backend/logout.php">Logout</a></li>
