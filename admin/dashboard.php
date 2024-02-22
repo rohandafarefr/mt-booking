@@ -20,7 +20,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             <h2>Menu</h2>
             <ul>
                 <li><a href="book_ticket.php">Book Ticket</a></li>
-                <li><a href="movies.php">Movies</a></li>
+                <li><a href="./movies">Movies</a></li>
                 <li><a href="add_show_timing.php">Show Timings</a></li>
                 <li><a href="booking_history.php">Bookings</a></li>
                 <li><a href="../backend/logout.php">Logout</a></li>
