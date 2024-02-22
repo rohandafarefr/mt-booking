@@ -17,7 +17,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 <body>
     <div class="container">
         <div class="sidebar">
-            <h2>Admin Panel</h2>
+            <h2>Menu</h2>
             <ul>
                 <li><a href="book_ticket.php">Book Ticket</a></li>
                 <li><a href="add_movie.php">Add Movies</a></li>
@@ -28,6 +28,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         </div>
         <div class="content">
             <h1>UT CINEMA</h1>
+            <br><hr>
         </div>
     </div>
 </body>
