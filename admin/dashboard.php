@@ -21,7 +21,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             <ul>
                 <li><a href="book_ticket.php">Book Ticket</a></li>
                 <li><a href="add_movie.php">Add Movies</a></li>
-                <li><a href="#">Show Timings</a></li>
+                <li><a href="add_show_timing.php">Show Timings</a></li>
                 <li><a href="#">Bookings</a></li>
                 <li><a href="../logout.php">Logout</a></li>
             </ul>
