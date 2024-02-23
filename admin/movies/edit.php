@@ -16,6 +16,9 @@ if(isset($_GET['movie_id'])) {
         $description = $row['description'];
         $release_date = $row['release_date'];
         $image_url = $row['image'];
+        $vip_price = $row['VIP'];
+        $premium_price = $row['PREMIUM'];
+        $gold_price = $row['GOLD'];
         // Add more fields as needed
     } else {
         // Movie not found
@@ -46,6 +49,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         $new_title = $_POST['title'];
         $new_description = $_POST['description'];
         $new_release_date = $_POST['release_date'];
+        $new_vip_price = $_POST['vip_price'];
+        $new_premium_price = $_POST['premium_price'];
+        $new_gold_price = $_POST['gold_price'];
         // Add more fields as needed
 
         // Check if a new image file is uploaded
@@ -59,8 +65,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             $upload_dir = "../../uploads/";
             $new_image_url = $upload_dir . $file_name;
             if(move_uploaded_file($file_tmp, $new_image_url)) {
-                // Update movie details in the database with new image URL
-                $update_sql = "UPDATE movies SET title = '$new_title', description = '$new_description', release_date = '$new_release_date', image = '$new_image_url' WHERE movie_id = $movie_id";
+                // Update movie details in the database with new image URL and pricing information
+                $update_sql = "UPDATE movies SET title = '$new_title', description = '$new_description', release_date = '$new_release_date', image = '$new_image_url', VIP = '$new_vip_price', PREMIUM = '$new_premium_price', GOLD = '$new_gold_price' WHERE movie_id = $movie_id";
                 if($conn->query($update_sql) === TRUE) {
                     echo "Movie details updated successfully.";
                     $image_url = $new_image_url; // Update image URL to display new image
@@ -71,8 +77,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "Error uploading image file.";
             }
         } else {
-            // Update movie details in the database without changing the image URL
-            $update_sql = "UPDATE movies SET title = '$new_title', description = '$new_description', release_date = '$new_release_date' WHERE movie_id = $movie_id";
+            // Update movie details in the database without changing the image URL and pricing information
+            $update_sql = "UPDATE movies SET title = '$new_title', description = '$new_description', release_date = '$new_release_date', VIP = '$new_vip_price', PREMIUM = '$new_premium_price', GOLD = '$new_gold_price' WHERE movie_id = $movie_id";
             if($conn->query($update_sql) === TRUE) {
                 echo "Movie details updated successfully.";
             } else {
@@ -105,6 +111,18 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="form-group">
                 <label for="release_date">Release Date:</label>
                 <input type="date" id="release_date" name="release_date" value="<?php echo $release_date; ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="vip_price">VIP Price:</label>
+                <input type="number" id="vip_price" name="vip_price" value="<?php echo $vip_price; ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="premium_price">Premium Price:</label>
+                <input type="number" id="premium_price" name="premium_price" value="<?php echo $premium_price; ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="gold_price">Gold Price:</label>
+                <input type="number" id="gold_price" name="gold_price" value="<?php echo $gold_price; ?>" required>
             </div>
             <div class="form-group">
                 <label for="image">Upload New Image:</label>
