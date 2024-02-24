@@ -1,9 +1,10 @@
 <?php
 include 'includes/db_connection.php';
 
-$sql = "SELECT movies.*, show_timings.timing_id, show_timings.timing, show_timings.available_seats 
-        FROM movies 
-        INNER JOIN show_timings ON movies.movie_id = show_timings.movie_id";
+$sql = "SELECT movies.*, show_timings.timing_id, show_timings.timing
+        FROM movies
+        INNER JOIN show_timings ON movies.movie_id = show_timings.movie_id_fk";
+
 $result = $conn->query($sql);
 ?>
 

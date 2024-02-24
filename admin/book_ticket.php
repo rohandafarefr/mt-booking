@@ -1,161 +1,203 @@
 <?php
-// Include database configuration file
 require_once '../includes/db_connection.php';
 
-// Fetch movies from the database
-$sql = "SELECT * FROM movies";
-$result = $conn->query($sql);
+$movies = array();
+$show_timings = array();
+$available_seats = array(
+    'VIP' => array(),
+    'Premium' => array(),
+    'Gold' => array()
+);
 
-$movies = [];
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $movies[$row['movie_id']] = $row;
-    }
+// Fetch movie data
+$sql = "SELECT * FROM movies";
+$result = mysqli_query($conn, $sql);
+
+while ($row = mysqli_fetch_assoc($result)) {
+  $movies[] = $row;
 }
 
+// Process form submissions
+if (isset($_POST['submit_movie'])) {
+  $movieId = $_POST['movie_id'];
+
+  // Fetch show timings for selected movie
+  $sql = "SELECT * FROM show_timings WHERE movie_id = $movieId";
+  $result = mysqli_query($conn, $sql);
+
+  while ($row = mysqli_fetch_assoc($result)) {
+    $show_timings[] = $row;
+  }
+}
+
+if (isset($_POST['submit_timing'])) {
+  $movieId = $_POST['movie_id'];
+  $timingId = $_POST['timing_id'];
+
+  // Logic to fetch available seats based on movie ID and timing ID from database (considering already booked seats)
+  $sql = "SELECT seat_number, category FROM seating WHERE category IN (
+    SELECT category FROM show_timings WHERE timing_id = $timingId
+  ) AND seat_number NOT IN (
+    SELECT seat_number FROM tickets WHERE timing_id = $timingId
+  )";
+  $result = mysqli_query($conn, $sql);
+
+  while ($row = mysqli_fetch_assoc($result)) {
+    $available_seats[$row['category']][] = $row['seat_number'];
+  }
+}
+
+if (isset($_POST['submit_seat'])) {
+  $movieId = $_POST['movie_id'];
+  $timingId = $_POST['timing_id'];
+  $selectedSeats = $_POST['seats'];
+
+  // Validate and insert booking information into database
+  if (!empty($selectedSeats)) {
+    $sql = "INSERT INTO tickets (movie_id, timing_id, seat_number) VALUES ";
+    $values = array();
+    foreach ($selectedSeats as $seat) {
+      $values[] = "($movieId, $timingId, '$seat')";
+    }
+    $sql .= implode(',', $values);
+
+    if (mysqli_query($conn, $sql)) {
+      echo "Ticket booked successfully!";
+    } else {
+      echo "Error booking ticket: " . mysqli_error($conn);
+    }
+  } else {
+    echo "Please select at least one seat.";
+  }
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Book Tickets</title>
-    <link rel="stylesheet" href="css/styles.css"> <!-- Add your CSS file here -->
-    <style>
-        /* Add your CSS styles for the seating layout here */
-        .theater {
-            width: 1000px;
-            border: 1px solid #ccc;
-            display: none; /* Hide by default */
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        .column {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .row {
-            display: flex;
-            margin-bottom: 10px;
-        }
-
-        .seat {
-            width: 30px;
-            height: 30px;
-            border: 1px solid #ccc;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 5px;
-            cursor: pointer;
-        }
-
-        .seat.selected {
-            background-color: #00ff00; /* Change to desired selected color */
-        }
-
-        .vip {
-            background-color: #ffcc00;
-        }
-
-        .premium {
-            background-color: #66ccff;
-        }
-
-        .gold {
-            background-color: #ff9900;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/book.css">
+  <title>Book Ticket</title>
 </head>
 <body>
-    <h2>Book Tickets</h2>
-    <form method="post" action="confirm_booking.php">
-        <div>
-            <label for="movie">Select Movie:</label>
-            <select id="movie" name="movie" required>
-                <option value="" disabled selected>Select a movie</option>
-                <?php foreach ($movies as $movie_id => $movie) : ?>
-                    <option value="<?php echo $movie_id; ?>"><?php echo $movie['title']; ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div>
-            <label for="showTiming">Select Show Timing:</label>
-            <select id="showTiming" name="showTiming" required disabled>
-                <option value="" disabled selected>Select a show timing</option>
-            </select>
-        </div>
-        <div class="theater" id="seatingLayout">
-            <!-- Seating layout will be loaded dynamically here -->
-        </div>
-        <button type="submit" id="bookNowBtn" disabled>Book Now</button>
+  <h1>Book Ticket</h1>
+  <form method="post">
+    <select name="movie_id">
+      <option value="">Select Movie</option>
+      <?php foreach ($movies as $movie): ?>
+        <option value="<?php echo $movie['movie_id']; ?>"><?php echo $movie['title']; ?></option>
+      <?php endforeach; ?>
+    </select>
+    <input type="submit" name="submit_movie" value="Select Movie">
+  </form>
+
+  <?php if (isset($show_timings) && !empty($show_timings)): ?>
+    <h2>Show Timings</h2>
+    <form method="post">
+      <input type="hidden" name="movie_id" value="<?php echo $movieId; ?>">
+      <?php foreach ($show_timings as $timing): ?>
+        <label for="timing_<?php echo $timing['timing_id']; ?>">
+          <input type="radio" name="timing_id" id="timing_<?php echo $timing['timing_id']; ?>" value="<?php echo $timing['timing_id']; ?>">
+          <?php echo $timing['start_time'] . ' - ' . $timing['end_time']; ?>
+        </label><br>
+      <?php endforeach; ?>
+      <input type="submit" name="submit_timing" value="Select Timing">
     </form>
+  <?php endif; ?>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var movieSelect = document.getElementById("movie");
-            var showTimingSelect = document.getElementById("showTiming");
-            var seatingLayout = document.getElementById("seatingLayout");
-            var bookNowBtn = document.getElementById("bookNowBtn");
+  <?php if (isset($available_seats) && !empty($available_seats)): ?>
+  <h2>Available Seats</h2>
+  <div class="seat-container">
+    <form method="post">
+      <input type="hidden" name="movie_id" value="<?php echo $movieId; ?>">
+      <input type="hidden" name="timing_id" value="<?php echo $timingId; ?>">
 
-            // Event listener for movie selection
-            movieSelect.addEventListener("change", function() {
-                var selectedMovieId = this.value;
-                if (selectedMovieId) {
-                    // Enable show timing selection
-                    showTimingSelect.disabled = false;
-                    showTimingSelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
+      <?php if (!empty($available_seats['VIP'])): ?>
+        <h3>VIP Seats : ₹350</h3>
+        <div class="seat-grid">
+          <?php
+          $columns = range('A', 'C');
+          $rows = range(1, 8);
 
-                    // Fetch show timings for the selected movie
-                    fetch('get_show_timings.php?movie_id=' + selectedMovieId)
-                        .then(response => response.json())
-                        .then(data => {
-                            showTimingSelect.innerHTML = '<option value="" disabled selected>Select a show timing</option>';
-                            data.forEach(function(showTiming) {
-                                var option = document.createElement("option");
-                                option.value = showTiming.timing_id;
-                                option.textContent = showTiming.start_time + ' - ' + showTiming.end_time;
-                                showTimingSelect.appendChild(option);
-                            });
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-                } else {
-                    // Disable and reset show timing selection
-                    showTimingSelect.disabled = true;
-                    showTimingSelect.innerHTML = '<option value="" disabled selected>Select a show timing</option>';
-                }
-            });
+          foreach ($rows as $row) {
+            echo '<div class="seat-row">';
+            foreach ($columns as $column) {
+              $seat = $column . $row;
+              echo '<div class="seat-item">';
+              echo '<label class="seat-label" for="' . $seat . '">';
+              echo $seat . '<br>';
+              echo '<input type="checkbox" id="' . $seat . '" name="seats[]" value="' . $seat . '">';
+              echo '</label>';
+              echo '</div>';
+            }
+            echo '</div>';
+          }
+          ?>
+        </div>
+      <?php endif; ?>
 
-            // Event listener for show timing selection
-            showTimingSelect.addEventListener("change", function() {
-                var selectedShowTimingId = this.value;
-                if (selectedShowTimingId) {
-                    // Fetch and display seating layout for the selected show timing
-                    var selectedMovieId = movieSelect.value;
-                    seatingLayout.innerHTML = 'Loading seating layout...';
-                    fetch('get_seating_layout.php?movie_id=' + selectedMovieId + '&show_timing_id=' + selectedShowTimingId)
-                        .then(response => response.text())
-                        .then(data => {
-                            seatingLayout.innerHTML = data;
-                            seatingLayout.style.display = "flex"; // Show seating layout
-                            bookNowBtn.disabled = false; // Enable booking button
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-                } else {
-                    // Hide seating layout if show timing is not selected
-                    seatingLayout.style.display = "none";
-                    bookNowBtn.disabled = true; // Disable booking button
-                }
-            });
-        });
-    </script>
+
+      <h3>Premium Seats : ₹250</h3>
+      <div class="seat-grid">
+          <?php
+          $columns = range('D', 'F');
+          $rows = range(1, 18);
+
+          foreach ($rows as $row) {
+            echo '<div class="seat-row">';
+            foreach ($columns as $column) {
+              $seat = $column . $row;
+              echo '<div class="seat-item">';
+              echo '<label class="seat-label" for="' . $seat . '">';
+              echo $seat . '<br>';
+              echo '<input type="checkbox" id="' . $seat . '" name="seats[]" value="' . $seat . '">';
+              echo '</label>';
+              echo '</div>';
+            }
+            echo '</div>';
+          }
+          ?>
+        </div>
+
+      <h3>Gold Seats : ₹200</h3>
+      <div class="seat-grid">
+          <?php
+          $columns = range('G', 'K');
+          $rows = range(1, 20);
+
+          foreach ($rows as $row) {
+            echo '<div class="seat-row">';
+            foreach ($columns as $column) {
+              $seat = $column . $row;
+              echo '<div class="seat-item">';
+              echo '<label class="seat-label" for="' . $seat . '">';
+              echo $seat . '<br>';
+              echo '<input type="checkbox" id="' . $seat . '" name="seats[]" value="' . $seat . '">';
+              echo '</label>';
+              echo '</div>';
+            }
+            echo '</div>';
+          }
+          ?>
+        </div>
+
+      <input type="submit" name="submit_seat" value="Book Ticket">
+    </form>
+  </div>
+<?php endif; ?>
+
+<script>
+  document.querySelectorAll('.seat-label input[type="checkbox"]').forEach(function(checkbox) {
+    checkbox.addEventListener('change', function() {
+      if (this.checked) {
+        this.parentElement.classList.add('checked');
+      } else {
+        this.parentElement.classList.remove('checked');
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
