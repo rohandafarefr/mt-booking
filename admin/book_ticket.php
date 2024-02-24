@@ -9,7 +9,6 @@ $available_seats = array(
     'Gold' => array()
 );
 
-// Fetch movie data
 $sql = "SELECT * FROM movies";
 $result = mysqli_query($conn, $sql);
 
@@ -17,11 +16,9 @@ while ($row = mysqli_fetch_assoc($result)) {
   $movies[] = $row;
 }
 
-// Process form submissions
 if (isset($_POST['submit_movie'])) {
   $movieId = $_POST['movie_id'];
 
-  // Fetch show timings for selected movie
   $sql = "SELECT * FROM show_timings WHERE movie_id = $movieId";
   $result = mysqli_query($conn, $sql);
 
@@ -34,7 +31,6 @@ if (isset($_POST['submit_timing'])) {
   $movieId = $_POST['movie_id'];
   $timingId = $_POST['timing_id'];
 
-  // Logic to fetch available seats based on movie ID and timing ID from database (considering already booked seats)
   $sql = "SELECT seat_number, category FROM seating WHERE category IN (
     SELECT category FROM show_timings WHERE timing_id = $timingId
   ) AND seat_number NOT IN (
@@ -52,7 +48,6 @@ if (isset($_POST['submit_seat'])) {
   $timingId = $_POST['timing_id'];
   $selectedSeats = $_POST['seats'];
 
-  // Validate and insert booking information into database
   if (!empty($selectedSeats)) {
     $sql = "INSERT INTO tickets (movie_id, timing_id, seat_number) VALUES ";
     $values = array();
@@ -135,7 +130,7 @@ if (isset($_POST['submit_seat'])) {
           }
           ?>
         </div>
-      <?php endif; ?>
+      
 
 
       <h3>Premium Seats : ₹250</h3>
@@ -181,7 +176,7 @@ if (isset($_POST['submit_seat'])) {
           }
           ?>
         </div>
-
+        <?php endif; ?>
       <input type="submit" name="submit_seat" value="Book Ticket">
     </form>
   </div>
