@@ -113,8 +113,8 @@ function getCategoryForSeat($seat) {
 			<div class="time">
 				<p><?php echo $timingInfo['start_time']; ?> <span>TO</span><?php echo $timingInfo['end_time'];?></p>
 			</div>
-			<p class="location"><span>UT Cinema</span>
-				<span class="separator"><i class="far fa-smile"></i></span><span>Kamptee, Nagpur, Maharashta</span>
+			<p class="location"><span>UT Cinema, -</span>
+				<span class="separator"></span><span> Kamptee, Nagpur, Maharashta</span>
 			</p>
 		</div>
 	</div>

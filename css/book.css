@@ -107,3 +107,40 @@ body {
     background-color: #4CAF50;
     color: white;
   }
+  /* Improved seat selection experience */
+.seat-label:hover {
+  background-color: #ddd;
+}
+
+.seat-label.checked {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.seat-container h3 {
+  margin-bottom: 10px;
+}
+
+.total-price {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+/* Typography */
+body {
+  font-family: "Open Sans", sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: "Roboto", sans-serif;
+}
+
+/* Overall design */
+.container {
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.seat-label {
+  border-radius: 5px;
+}
