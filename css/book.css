@@ -126,7 +126,6 @@ body {
   margin-top: 10px;
 }
 
-/* Typography */
 body {
   font-family: "Open Sans", sans-serif;
 }
@@ -135,7 +134,6 @@ h1, h2, h3 {
   font-family: "Roboto", sans-serif;
 }
 
-/* Overall design */
 .container {
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);

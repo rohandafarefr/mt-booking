@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if ($_FILES["image"]["error"] == 0) {
-        $image_info = getimagesize($_FILES["image"]["tmp_name"]); // Get image size info
+        $image_info = getimagesize($_FILES["image"]["tmp_name"]);
         if ($image_info !== false) {
             if ($_FILES["image"]["size"] > 2000000) { 
                 $image_err = "Sorry, your file is too large.";
@@ -41,7 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $target_file = $upload_dir . $image_name;
     
                 if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-                    // File uploaded successfully, update image variable
                     $image = "http://localhost/mt-booking/uploads/" . $image_name;
                 } else {
                     $image_err = "Error uploading image file.";

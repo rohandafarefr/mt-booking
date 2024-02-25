@@ -1,12 +1,9 @@
 <?php
-// Include database configuration file
 require_once '../../includes/db_connection.php';
 
-// Fetch all movies from the database with pricing information
 $sql = "SELECT * FROM movies";
 $result = $conn->query($sql);
 
-// Check if movies exist
 if ($result) {
     ?>
     <!DOCTYPE html>
@@ -57,10 +54,8 @@ if ($result) {
     </html>
     <?php
 } else {
-    // Handle error if query fails
     echo "Error: " . $conn->error;
 }
 
-// Close database connection
 $conn->close();
 ?>

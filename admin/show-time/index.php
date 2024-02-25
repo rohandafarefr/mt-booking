@@ -1,19 +1,15 @@
 <?php
 session_start();
 
-// Check if the admin is logged in, redirect to login page if not
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header("Location: ../../login.php");
     exit();
 }
 
-// Include database connection file
 require_once '../../includes/db_connection.php';
 
-// Define an empty array to store show timings
 $show_timings = array();
 
-// Fetch show timings from the database
 $sql = "SELECT st.timing_id, st.movie_id, st.start_time, st.end_time, m.title
         FROM show_timings st
         INNER JOIN movies m ON st.movie_id = m.movie_id
@@ -22,13 +18,11 @@ $sql = "SELECT st.timing_id, st.movie_id, st.start_time, st.end_time, m.title
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
-    // Loop through each row and store show timings in the array
     while ($row = $result->fetch_assoc()) {
         $show_timings[] = $row;
     }
 }
 
-// Close database connection
 $conn->close();
 ?>
 
@@ -41,8 +35,6 @@ $conn->close();
 </head>
 <body>
     <style>
-        /* show_timings.css */
-
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -95,7 +87,6 @@ $conn->close();
         a:hover {
             background-color: #0056b3;
         }
-
     </style>
     <div class="container">
         <h2>Show Timings</h2>

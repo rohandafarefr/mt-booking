@@ -13,7 +13,7 @@ $sql = "SELECT * FROM movies";
 $result = mysqli_query($conn, $sql);
 
 while ($row = mysqli_fetch_assoc($result)) {
-    $movies[$row['movie_id']] = $row; // Store movie details by movie_id
+    $movies[$row['movie_id']] = $row;
 }
 
 if (isset($_POST['submit_movie'])) {
@@ -49,73 +49,57 @@ if (isset($_POST['submit_seat'])) {
     $selectedSeats = $_POST['seats'];
 
     if (!empty($selectedSeats)) {
-        // Generate a unique random booking ID
-        $bookingId = mt_rand(1000, 9999); // Generate a 4-digit random number
+        $bookingId = mt_rand(1000, 9999);
 
-        // Prepare and execute the insert statement for each selected seat
         $stmt = $conn->prepare("INSERT INTO tickets (movie_id, timing_id, seat_number, booking_id, amount) VALUES (?, ?, ?, ?, ?)");
 
-        // Bind parameters and execute for each selected seat
         foreach ($selectedSeats as $seat) {
-            // Calculate the amount based on the category of the seat
             $category = getCategoryForSeat($seat);
             $amount = $movies[$movieId][$category];
-            // Bind parameters
             $stmt->bind_param("iisid", $movieId, $timingId, $seat, $bookingId, $amount);
-            // Execute the statement
             if (!$stmt->execute()) {
                 echo "Error booking ticket: " . $stmt->error;
                 $stmt->close();
-                exit(); // Exit loop if an error occurs
+                exit();
             }
         }
 
-        // Close the statement after all seats are booked
         $stmt->close();
 
-        // Redirect to tickets.php with booking ID
         header("Location: tickets.php?booking_id=$bookingId");
     } else {
         echo "Please select at least one seat.";
     }
 }
 
-// Function to determine the category based on the seat number
 function getCategoryForSeat($seat) {
-  // Extract the row and column from the seat number
-  $row = substr($seat, 1);
-  $column = strtoupper(substr($seat, 0, 1));
+    $row = substr($seat, 1);
+    $category = strtoupper(substr($seat, 0, 1));
 
-  // Define the category boundaries based on the seat layout
-  $vipRows = range(1, 5);
-  $premiumRows = range(6, 15);
-  $goldRows = range(16, 30);
+    $vipRows = range(1, 5);
+    $premiumRows = range(6, 15);
+    $goldRows = range(16, 30);
 
-  // Determine the category based on the seat number
-  if (in_array($row, $vipRows)) {
-      return 'VIP';
-  } elseif (in_array($row, $premiumRows)) {
-      return 'PREMIUM';
-  } elseif (in_array($row, $goldRows)) {
-      return 'GOLD';
-  } else {
-      // Default category if not found
-      return 'UNKNOWN';
-  }
+    if (in_array($row, $vipRows)) {
+        return 'VIP';
+    } elseif (in_array($row, $premiumRows)) {
+        return 'PREMIUM';
+    } elseif (in_array($row, $goldRows)) {
+        return 'GOLD';
+    } else {
+        return 'UNKNOWN';
+    }
 }
-
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/book.css">
     <title>Book Ticket</title>
 </head>
-
 <body>
     <h1>Book Ticket</h1>
     <form method="post">
@@ -148,14 +132,9 @@ function getCategoryForSeat($seat) {
             <form method="post">
                 <input type="hidden" name="movie_id" value="<?php echo $movieId; ?>">
                 <input type="hidden" name="timing_id" value="<?php echo $timingId; ?>">
-                <?php
-                // Check if the category price is available in the movies table
-                foreach ($available_seats as $category => $seats) {
-                    if (!empty($seats)) {
-                        // Fetch the price for the current category from the movies array
-                        $categoryPrice = $movies[$movieId][$category];
-                        ?>
-                        <h3><?php echo $category; ?> Seats : ₹<?php echo $categoryPrice; ?></h3>
+                <?php foreach ($available_seats as $category => $seats): ?>
+                    <?php if (!empty($seats)): ?>
+                        <h3><?php echo $category; ?> Seats : ₹<?php echo $movies[$movieId][$category]; ?></h3>
                         <div class="seat-grid">
                             <?php
                             $columns = range('A', 'C');
@@ -168,41 +147,22 @@ function getCategoryForSeat($seat) {
                                 $rows = range(1, 20);
                             }
 
-                            foreach ($rows as $row) {
-                                echo '<div class="seat-row">';
-                                foreach ($columns as $column) {
-                                    $seat = $column . $row;
-                                    echo '<div class="seat-item">';
-                                    echo '<label class="seat-label" for="' . $seat . '">';
-                                    echo $seat . '<br>';
-                                    echo '<input type="checkbox" id="' . $seat . '" name="seats[]" value="' . $seat . '">';
-                                    echo '</label>';
-                                    echo '</div>';
-                                }
-                                echo '</div>';
-                            }
-                            ?>
+                            foreach ($rows as $row): ?>
+                                <div class="seat-row">
+                                    <?php foreach ($columns as $column):
+                                        $seat = $column . $row; ?>
+                                        <div class="seat-item">
+                                            <label class="seat-label" for="<?php echo $seat; ?>">
+                                                <?php echo $seat . '<br>'; ?>
+                                                <input type="checkbox" id="<?php echo $seat; ?>" name="seats[]" value="<?php echo $seat; ?>">
+                                            </label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
-                        <?php
-                    }
-                  }
-                  ?>
-                  <p>Screen This Side 
-                    <hr>
-                    <style>p{
-                      text-align: center;
-                      margin-top: 10px;
-                    }
-                    hr {
-                      border: 10px solid #000000;
-                      width: 50%; /* Adjust width as needed */
-                      margin-right: auto;
-                      margin-left: auto;
-                    }
-
-
-                  
-                  </style></p>
+                    <?php endif; ?>
+                <?php endforeach; ?>
                 <input type="submit" name="submit_seat" value="Book Ticket">
             </form>
         </div>
@@ -221,5 +181,4 @@ function getCategoryForSeat($seat) {
     </script>
 
 </body>
-
 </html>
