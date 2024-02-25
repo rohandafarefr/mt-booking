@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($_FILES["image"]["error"] == 0) {
         $image_info = getimagesize($_FILES["image"]["tmp_name"]); // Get image size info
         if ($image_info !== false) {
-            if ($_FILES["image"]["size"] > 500000) { 
+            if ($_FILES["image"]["size"] > 2000000) { 
                 $image_err = "Sorry, your file is too large.";
             } else {
                 $upload_dir = "../../uploads/";
@@ -91,8 +91,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h2>Menu</h2>
             <ul>
                 <li><a href="../movies">Movies</a></li>
-                <li><a href="book_ticket.php">Book Ticket</a></li>
-                <li><a href="add_show_timing.php">Show Timings</a></li>
+                <li><a href="../book_ticket.php">Book Ticket</a></li>
+                <li><a href="../show-time/index.php">Show Timings</a></li>
                 <li><a href="booking_history.php">Bookings</a></li>
                 <li><a href="../backend/logout.php">Logout</a></li>
             </ul>

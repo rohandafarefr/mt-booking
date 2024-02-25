@@ -35,14 +35,20 @@ if(isset($_GET['movie_id'])) {
 if($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if delete button is clicked
     if(isset($_POST['delete'])) {
-        // Delete movie from database
-        $delete_sql = "DELETE FROM movies WHERE movie_id = $movie_id";
-        if($conn->query($delete_sql) === TRUE) {
-            // Redirect to movies list page
-            header("Location: index.php");
-            exit();
+        // Delete related records from the tickets table first
+        $delete_tickets_sql = "DELETE FROM tickets WHERE timing_id IN (SELECT timing_id FROM show_timings WHERE movie_id = $movie_id)";
+        if($conn->query($delete_tickets_sql) === TRUE) {
+            // Now delete the movie from the movies table
+            $delete_movie_sql = "DELETE FROM movies WHERE movie_id = $movie_id";
+            if($conn->query($delete_movie_sql) === TRUE) {
+                // Redirect to movies list page
+                header("Location: index.php");
+                exit();
+            } else {
+                echo "Error deleting movie: " . $conn->error;
+            }
         } else {
-            echo "Error deleting movie: " . $conn->error;
+            echo "Error deleting tickets: " . $conn->error;
         }
     } else {
         // Retrieve form data

@@ -22,7 +22,7 @@ if ($result) {
         <ul>
             <li><a href="add.php">Add Movie</a></li>
             <li><a href="../book_ticket.php">Book Ticket</a></li>
-            <li><a href="../add_show_timing.php">Show Timings</a></li>
+            <li><a href="../show-time/add.php">Show Timings</a></li>
             <li><a href="../booking_history.php">Bookings</a></li>
             <li><a href="../../backend/logout.php">Logout</a></li>
         </ul>
