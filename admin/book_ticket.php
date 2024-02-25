@@ -185,8 +185,24 @@ function getCategoryForSeat($seat) {
                         </div>
                         <?php
                     }
-                }
-                ?>
+                  }
+                  ?>
+                  <p>Screen This Side 
+                    <hr>
+                    <style>p{
+                      text-align: center;
+                      margin-top: 10px;
+                    }
+                    hr {
+                      border: 10px solid #000000;
+                      width: 50%; /* Adjust width as needed */
+                      margin-right: auto;
+                      margin-left: auto;
+                    }
+
+
+                  
+                  </style></p>
                 <input type="submit" name="submit_seat" value="Book Ticket">
             </form>
         </div>

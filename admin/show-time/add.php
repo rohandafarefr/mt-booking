@@ -80,9 +80,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Add Show Timing</title>
-    <link rel="stylesheet" href="../../css/add_show_timing.css">
 </head>
 <body>
+    <style>
+        /* add_show_timing.css */
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button[type="button"], button[type="submit"], a {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        button[type="button"]:hover, button[type="submit"]:hover, a:hover {
+            background-color: #0056b3;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+    </style>
     <div class="container">
         <h2>Add Show Timing</h2>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
@@ -116,7 +178,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
             </div>
 
-            <button type="button" id="add_show_timing">Add Show Timing</button>
 
             <?php
             // Display timing errors if any
@@ -132,23 +193,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
     </div>
 
-    <script>
-        // JavaScript for adding additional show timing fields
-        document.getElementById('add_show_timing').addEventListener('click', function () {
-            const showTimingFields = document.getElementById('show_timings_fields');
-            const lastShowTimingField = showTimingFields.lastElementChild;
-
-            // Clone the last show timing field and append it to the container
-            const newShowTimingField = lastShowTimingField.cloneNode(true);
-            const index = parseInt(newShowTimingField.querySelector('input[name^="show_timings["]').getAttribute('name').match(/\d+/)[0]) + 1;
-            newShowTimingField.querySelector('input[name^="show_timings["]').setAttribute('name', `show_timings[${index}][start_time]`);
-            newShowTimingField.querySelector('input[name^="show_timings["]').value = '';
-            newShowTimingField.querySelector('input[name^="show_timings["]').setAttribute('required', 'required');
-            newShowTimingField.querySelector('input[name^="show_timings["]').nextElementSibling.querySelector('input[name^="show_timings["]').setAttribute('name', `show_timings[${index}][end_time]`);
-            newShowTimingField.querySelector('input[name^="show_timings["]').nextElementSibling.querySelector('input[name^="show_timings["]').value = '';
-            newShowTimingField.querySelector('input[name^="show_timings["]').nextElementSibling.querySelector('input[name^="show_timings["]').setAttribute('required', 'required');
-            showTimingFields.appendChild(newShowTimingField);
-        });
-    </script>
 </body>
 </html>
