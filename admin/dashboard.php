@@ -30,9 +30,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             <h1>UT CINEMA</h1>
             <br><hr>
         </div>
-        <span>
-            Movie Tickets Booking Portal
-        </span>
     </div>
 </body>
 </html>
